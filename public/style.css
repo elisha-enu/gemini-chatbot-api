@@ -29,23 +29,37 @@ h1 {
   margin-bottom: 10px;
 }
 
+.message-container {
+  display: flex;
+}
+
+.message-container.user {
+  justify-content: flex-end;    
+}
+
+.message-container.bot {
+  justify-content: flex-start;    
+}
+
 .message {
   margin: 8px 0;
   padding: 8px 12px;
   border-radius: 20px;
   max-width: 80%;
-  display: inline-block;
+  width: fit-content;
+  /* display: inline-block; */
+  display: flex;
 }
 
 .message.user {
   background-color: #d1e7ff;
-  float: right;
+  /* float: right; */
   text-align: right;
 }
 
 .message.bot {
   background-color: #dff6dd;
-  float: left;
+  /* float: left; */
   text-align: left;
 }
 
