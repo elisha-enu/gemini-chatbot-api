@@ -13,11 +13,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// const upload = multer(); 
 const genai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
-const GEMINI_MODEL  = 'gemini-2.5-flash-lite';
+const GEMINI_MODEL  = 'gemini-2.5-flash';
 
 app.use(express.json());
 const PORT = 3000;
@@ -28,7 +27,6 @@ app.listen(PORT, () => {
 
 app.post('/api/chat', async (req, res) => {
   const { conversation } = req.body;
-    console.log('req', conversation);  
 
     // example input from user
     // conversation: [
@@ -47,126 +45,19 @@ app.post('/api/chat', async (req, res) => {
         parts: [{ text: message.text }],
       };
     });
+
     const response = await genai.models.generateContent({
       model: GEMINI_MODEL,
       contents: formattedConversation,
       config: {
-        systemInstruction: 'Only respons in Indonesia Language',
-        temperature: 2.0,
+        systemInstruction: 'Kamu adalah Personal Health Assistant yang ahli. Tugasmu adalah membantu pengguna melacak dan meningkatkan kesehatan mereka. Berdasarkan profil pengguna (jenis kelamin, usia, tinggi badan, dan berat badan), berikan saran yang spesifik mengenai: 1. Gaya hidup sehat, 2. Latihan fisik/olahraga yang cocok, 3. Rencana makan (meal plan), dan 4. Waktu tidur yang optimal. Selalu berikan jawaban dalam Bahasa Indonesia yang ramah dan informatif.',
+        temperature: 1.0,
       }
     });
 
-    res.status(200).json({ result: `Response for prompt: ${response.text}` });
+    res.status(200).json({ result: response.text });
   } catch (error) {
     console.error('Error generating content:', error);
     res.status(500).json({ message: error.message });
   }
 });
-
-// app.post('/generate-text', async (req, res) => {
-//   const { prompt } = req.body;
-
-//   try {
-//     const response = await genai.models.generateContent({
-//       model: GEMINI_MODEL,
-//       contents: prompt
-//     //   input: {
-//     //     content: [
-//     //       {
-//     //         type: 'input_text',
-//     //         text: prompt,
-//     //       },
-//     //     ],
-//     //   },
-
-//     });
-
-//     res.status(200).json({ result: response.text});
-//     // const generatedText = response.candidates[0].content.text;
-//     // res.json({ generatedText });
-//   } catch (error) {
-//     console.error('Error generating content:', error);
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// app.post('/generate-from-image', upload.single('image'), async (req, res) => {
-//   const { prompt } = req.body;
-//   const imageBase64 = req.file.buffer.toString('base64');
-
-//   try {
-//     const response = await genai.models.generateContent({
-//       model: GEMINI_MODEL,
-//       contents: [
-//         {
-//           text: prompt, type: 'text',
-//         },
-//         {
-//           inlineData: {
-//             data: imageBase64,
-//             mimeType: req.file.mimetype,
-//           },
-//         }
-//       ]
-//     });
-
-//     res.status(200).json({ result: response.text });
-//   } catch (error) {
-//     console.error('Error generating content from image:', error);
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// app.post('/generate-from-document', upload.single('document'), async (req, res) => {
-//   const { prompt } = req.body;
-//   const documentBase64 = req.file.buffer.toString('base64');
-
-//   try {
-//     const response = await genai.models.generateContent({
-//       model: GEMINI_MODEL,
-//       contents: [
-//         {
-//           text: prompt ?? "Tolong buat ringkasan dari dokumen berikut", type: 'text',
-//         },
-//         {
-//           inlineData: {
-//             data: documentBase64,
-//             mimeType: req.file.mimetype,
-//           },
-//         }
-//       ]
-//     });
-
-//     res.status(200).json({ result: response.text });
-//   } catch (error) {
-//     console.error('Error generating content from document:', error);
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// app.post('/generate-from-audio', upload.single('audio'), async (req, res) => {
-//   const { prompt } = req.body;
-//   const audioBase64 = req.file.buffer.toString('base64');
-
-//   try {
-//     const response = await genai.models.generateContent({
-//       model: GEMINI_MODEL,
-//       contents: [
-//         {
-//           text: prompt ?? "Tolong buat ringkasan dari audio berikut", type: 'text',
-//         },
-//         {
-//           inlineData: {
-//             data: audioBase64,
-//             mimeType: req.file.mimetype,
-//           },
-//         }
-//       ]
-//     });
-
-//     res.status(200).json({ result: response.text });
-//   } catch (error) {
-//     console.error('Error generating content from audio:', error);
-//     res.status(500).json({ message: error.message });
-//   }
-// });
